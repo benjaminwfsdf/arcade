@@ -15,6 +15,7 @@
       --danger:#ff4d4d;
       --ok:#00ff88;
       --space:10px;
+      --bar-h:56px; /* alto de la barra inferior */
     }
 
     *{
@@ -29,24 +30,24 @@
     body{
       display:flex; flex-direction:column; align-items:center;
       background:linear-gradient(180deg,#0c0032,#190061,#240090);
+      /* espacio para que no tape la barra fija */
+      padding-bottom: calc(var(--bar-h) + env(safe-area-inset-bottom));
     }
 
-    /* Barra abajo (antes estaba arriba) */
-    .topbar{
-      position:sticky;
-      bottom:0;            /* <- bajada */
-      top:auto;
-      z-index:5; width:100%;
-      padding:8px 10px calc(8px + env(safe-area-inset-bottom));
-      background:linear-gradient(0deg,rgba(0,0,0,.8),rgba(0,0,0,.35));
+    /* ===== Barra inferior fija (botón Volver) ===== */
+    .bottombar{
+      position:fixed; left:0; right:0; bottom:0; z-index:50;
+      height: calc(var(--bar-h) + env(safe-area-inset-bottom));
+      padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+      background:linear-gradient(0deg,rgba(0,0,0,.85),rgba(0,0,0,.45));
       backdrop-filter:saturate(1.3) blur(6px);
-      display:flex; gap:8px; align-items:center;
-      border-top:1px solid rgba(255,165,0,.25);
+      display:flex; gap:8px; align-items:center; border-top:1px solid rgba(255,165,0,.25);
     }
     .back{
       appearance:none; border:1px solid var(--accent); color:#000;
       background:linear-gradient(135deg,#ffd04a,#ff9f1c);
-      border-radius:10px; padding:10px 12px; font-weight:800; display:flex; gap:8px; align-items:center
+      border-radius:10px; padding:10px 12px; font-weight:800; display:flex; gap:8px; align-items:center;
+      box-shadow:0 6px 14px rgba(0,0,0,.35);
     }
     .spacer{flex:1}
 
@@ -144,9 +145,11 @@
 <body>
   <div class="stars" id="stars"></div>
 
-  <!-- Mismo markup, ahora esta barra se queda ABAJO gracias al CSS -->
-  <div class="topbar">
-    <button class="back" onclick="location.href='index.html'"><i class="fa-solid fa-arrow-left"></i> Volver al Arcade</button>
+  <!-- Barra inferior fija -->
+  <div class="bottombar">
+    <button class="back" onclick="location.href='index.html'">
+      <i class="fa-solid fa-arrow-left"></i> Volver al Arcade
+    </button>
     <div class="spacer"></div>
   </div>
 
@@ -297,16 +300,16 @@
       const marginX = 36, marginY = 60;
       const areaW = canvas.clientWidth - marginX*2;
 
-      // menos columnas en móviles; más en pantallas anchas
       const maxCols = Math.min(8, Math.floor(areaW / 90));
       const cols = Math.max(5, maxCols);
-      const rows = Math.min(4, 3 + Math.min(level-1, 1)); // 3 ó 4 filas
+      const rows = Math.min(4, 3 + Math.min(level-1, 1));
 
       const spacingX = areaW / cols;
-      const spacingY = 68; // más alto => más espacio para esquivar
+      const spacingY = 68;
 
       for(let r=0;r<rows;r++){
-        for(let c=0;c<cols;c++){
+        for(let c=0;c<c
+ols;c++){
           formation.push({
             x: marginX + c*spacingX + spacingX*0.5,
             y: marginY + r*spacingY,
@@ -333,7 +336,6 @@
 
     /* ======== Spawns / disparos ======== */
     function spawnEnemiesFromFormation(){
-      // Máximo activos menor => menos “apelotonados”
       if(Math.random()<0.018 && enemies.length < 4 + Math.floor(level*0.7)){
         const alive = formation.filter(e=>e.alive);
         if(alive.length){
@@ -348,7 +350,6 @@
     }
 
     function enemyShoot(){
-      // Menos frecuencia y balas un poco más lentas
       if(enemies.length && Math.random()<0.015){
         const e = enemies[(Math.random()*enemies.length)|0];
         enemyBullets.push({x:e.x+e.width/2-2,y:e.y+e.height,width:4,height:12,speed:3.6,color:'#ff6b6b'});
@@ -376,7 +377,7 @@
     function createExplosion(x,y,size=30){ explosions.push({x,y,size,life:1,maxLife:1}); }
     function spawnPowerUp(x,y){
       if(Math.random()<0.35){
-        const bag = ['shield','double','bomb','life']; // nuevo: bomb
+        const bag = ['shield','double','bomb','life'];
         const type = bag[(Math.random()*bag.length)|0];
         powerUps.push({x:x-10,y:y-10,width:22,height:22,speed:2.1,type});
       }
@@ -384,10 +385,9 @@
 
     /* ======== Update ======== */
     function updateGame(){
-      // mover jugador
       if(controls.left)  player.x = clamp(player.x - player.speed, 0, canvas.clientWidth - player.width);
       if(controls.right) player.x = clamp(player.x + player.speed, 0, canvas.clientWidth - player.width);
-      if(controls.up)    player.y = clamp(player.y - player.speed, canvas.clientHeight*0.45, canvas.clientHeight - player.height); // restringe a mitad inferior
+      if(controls.up)    player.y = clamp(player.y - player.speed, canvas.clientHeight*0.45, canvas.clientHeight - player.height);
       if(controls.down)  player.y = clamp(player.y + player.speed, canvas.clientHeight*0.45, canvas.clientHeight - player.height);
 
       if(player.doubleShot && --doubleShotTimer<=0) player.doubleShot=false;
@@ -404,7 +404,6 @@
       updatePowerUps();
       updateExplosions();
 
-      // Siguiente nivel
       const aliveInFormation = formation.some(e=>e.alive);
       if(!aliveInFormation && enemies.length===0 && bosses.length===0){
         level++; createFormation(); updateHUD();
@@ -412,12 +411,10 @@
     }
 
     function updateBullets(){
-      // jugador
       for(let i=bullets.length-1;i>=0;i--){
         const b=bullets[i]; b.y -= b.speed;
         if(b.y < -b.height) bullets.splice(i,1);
       }
-      // enemigos
       for(let i=enemyBullets.length-1;i>=0;i--){
         const b=enemyBullets[i]; b.y += b.speed;
         if(b.y > canvas.clientHeight){ enemyBullets.splice(i,1); continue; }
@@ -433,12 +430,10 @@
       for(let i=enemies.length-1;i>=0;i--){
         const e=enemies[i];
         e.t += 0.08;
-        // trayectoria onda con caída lenta
         e.x += Math.sin(e.t*1.3)*1.8;
         e.y += e.speed;
         if(e.y > canvas.clientHeight+60){ enemies.splice(i,1); continue; }
 
-        // balas del jugador
         for(let j=bullets.length-1;j>=0;j--){
           const b=bullets[j];
           if(AABB({x:b.x,y:b.y,width:b.width,height:b.height}, e)){
@@ -450,7 +445,6 @@
             break;
           }
         }
-        // colisión con jugador
         if(AABB(player,e) && !player.hasShield && player.invulnerable===0){
           lives--; player.invulnerable=60; enemies.splice(i,1); updateHUD();
           createExplosion(player.x+player.width/2, player.y+player.height/2);
@@ -471,7 +465,6 @@
             enemyBullets.push({x:b.x+b.width/2-2+(k-1)*22,y:b.y+b.height,width:6,height:15,speed:3.8,color:'#ff00ff'});
           }
         }
-        // daño de balas
         for(let j=bullets.length-1;j>=0;j--){
           const p=bullets[j];
           if(AABB({x:p.x,y:p.y,width:p.width,height:p.height}, b)){
@@ -508,7 +501,6 @@
 
     /* ======== Dibujo ======== */
     function drawEnemyShape(e){
-      // formas distintas: bee = triángulo rojo, butterfly = rombo verde, galaga = disco azul
       if(e.type==='bee'){
         ctx.fillStyle='#ff5252';
         ctx.beginPath();
@@ -523,7 +515,7 @@
         ctx.rotate(Math.PI/4);
         ctx.fillRect(-e.width/2+2,-e.height/2+2,e.width-4,e.height-4);
         ctx.restore();
-      }else{ // galaga
+      }else{
         ctx.fillStyle='#4c6dff';
         ctx.beginPath();
         ctx.arc(e.x+e.width/2, e.y+e.height/2, e.width/2, 0, Math.PI*2); ctx.fill();
@@ -535,7 +527,6 @@
     function draw(){
       ctx.clearRect(0,0,canvas.clientWidth,canvas.clientHeight);
 
-      // puntos guía de formación (sutiles)
       formation.forEach(e=>{
         if(e.alive){
           ctx.fillStyle = 'rgba(255,255,255,.05)';
@@ -545,9 +536,7 @@
 
       enemies.forEach(drawEnemyShape);
 
-      // Jefe
       bosses.forEach(b=>{
-        // cuerpo púrpura con ventanillas
         ctx.fillStyle='#c500ff';
         ctx.fillRect(b.x,b.y,b.width,b.height);
         ctx.fillStyle='#000';
@@ -556,7 +545,6 @@
         ctx.fillRect(b.x+38,b.y+56,b.width-76,12);
       });
 
-      // jugador: triángulo amarillo, con aura si escudo
       if(player.invulnerable===0 || Math.floor(Date.now()/120)%2===0){
         ctx.fillStyle = '#ffff58';
         ctx.beginPath();
@@ -571,16 +559,14 @@
         }
       }
 
-      // balas
       bullets.forEach(b=>{
-        ctx.fillStyle=b.color; // ya set
+        ctx.fillStyle=b.color;
         ctx.fillRect(b.x,b.y,b.width,b.height);
       });
       enemyBullets.forEach(b=>{
         ctx.fillStyle=b.color; ctx.fillRect(b.x,b.y,b.width,b.height);
       });
 
-      // powerups: íconos
       powerUps.forEach(p=>{
         ctx.save();
         ctx.translate(p.x+p.width/2,p.y+p.height/2);
@@ -594,7 +580,7 @@
           ctx.fillStyle='#2ee66f';
           ctx.beginPath(); ctx.arc(0,2,9,0,Math.PI*2); ctx.fill();
           ctx.fillStyle='#0e5a2b'; ctx.fillRect(-2,-8,4,6);
-        }else{ // vida
+        }else{
           ctx.fillStyle='#ff4d6d';
           ctx.beginPath();
           ctx.moveTo(0,8);
@@ -604,7 +590,6 @@
         ctx.restore();
       });
 
-      // explosiones
       explosions.forEach(ex=>{
         const alpha = ex.life/ex.maxLife;
         const size  = ex.size*(1 - ex.life/ex.maxLife);
@@ -662,8 +647,7 @@
     }
     function useSpecial(){
       if(!gameRunning || gamePaused || player.bombs<=0) return;
-      player.bombs--; // consume
-      // limpia enemigos actuales y da puntos moderados
+      player.bombs--;
       enemies.forEach(e=>{ createExplosion(e.x+e.width/2, e.y+e.height/2); score+=50; });
       enemies=[];
       createExplosion(canvas.clientWidth/2, canvas.clientHeight/2, 120);
@@ -700,7 +684,7 @@
     pauseBtn.addEventListener('click', togglePause);
     restartBtn.addEventListener('click', restartGame);
 
-    /* Bloqueos extra iOS: sin copiar/pegar, sin menú contextual, sin gestos */
+    /* Bloqueos extra iOS */
     document.addEventListener('contextmenu', e=> e.preventDefault());
     document.addEventListener('selectstart', e=> { if(e.target.closest('button')) e.preventDefault(); });
     document.addEventListener('gesturestart', e=> e.preventDefault());
