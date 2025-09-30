@@ -15,81 +15,35 @@
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <style>
-    :root{
-      --bg:#0b0b0b; --text:#f7f7f7; --gold:#ffd54a; --radius:16px;
-      --muted:#9aa0a6; --panel:#121212; --stroke:#2a2a2a;
-      --ok:#00e676; --bad:#ff5252;
-    }
+    :root{--bg:#0b0b0b;--text:#f7f7f7;--gold:#ffd54a;--radius:16px;--muted:#9aa0a6}
     *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
     html,body{height:100%}
     body{
       margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto;
       background:radial-gradient(1200px 600px at 10% -20%, rgba(255,213,74,.12), transparent 60%), var(--bg);
-      color:var(--text);
-      padding:env(safe-area-inset-top) 12px calc(14px + env(safe-area-inset-bottom));
+      color:var(--text);padding:env(safe-area-inset-top) 12px env(safe-area-inset-bottom);
       display:flex;flex-direction:column;gap:10px;
     }
-
-    header{position:sticky;top:0;z-index:3;
-      background:linear-gradient(180deg, rgba(11,11,11,.95), rgba(11,11,11,.75) 60%, transparent);
-      backdrop-filter:saturate(1.2) blur(6px);padding:10px 4px 8px}
+    header{position:sticky;top:0;z-index:2;background:linear-gradient(180deg, rgba(11,11,11,.95), rgba(11,11,11,.75) 60%, transparent);backdrop-filter:saturate(1.2) blur(6px);padding:10px 4px 6px}
     .title{display:flex;align-items:center;justify-content:space-between;gap:10px}
-    .title h1{
-      margin:0;font-size:1.6rem;
-      background-image:linear-gradient(45deg,var(--gold),#ffa73b);
-      background-clip:text;-webkit-background-clip:text;color:transparent;
-      text-shadow:0 0 18px rgba(255,213,74,.28)
-    }
-
-    /* Indicador de conexión + botón instalar */
-    .statusbar{
-      display:flex; align-items:center; gap:8px; font-size:.86rem; color:var(--muted);
-    }
-    .dot{width:10px;height:10px;border-radius:999px; background:var(--ok); box-shadow:0 0 10px rgba(0,230,118,.5)}
-    .dot.off{background:var(--bad); box-shadow:0 0 10px rgba(255,82,82,.5)}
-    .install-btn{
-      margin-left:auto; border:none; cursor:pointer;
-      background:linear-gradient(135deg,var(--gold),#ffb347);
-      color:#121212; font-weight:800; padding:8px 10px; border-radius:12px;
-      display:none; /* se muestra sólo cuando hay evento de instalación */
-    }
-
+    .title h1{margin:0;font-size:1.6rem;background-image:linear-gradient(45deg,var(--gold),#ffa73b);background-clip:text;-webkit-background-clip:text;color:transparent;text-shadow:0 0 18px rgba(255,213,74,.28)}
+    .statusbar{display:flex;align-items:center;gap:8px;font-size:.86rem;color:var(--muted)}
+    .dot{width:10px;height:10px;border-radius:999px;background:#00e676;box-shadow:0 0 10px rgba(0,230,118,.5)}
+    .dot.off{background:#ff5252;box-shadow:0 0 10px rgba(255,82,82,.5)}
+    .install-btn{margin-left:auto;border:none;cursor:pointer;background:linear-gradient(135deg,var(--gold),#ffb347);color:#121212;font-weight:800;padding:8px 10px;border-radius:12px;display:none}
     main{padding:6px 2px 14px}
     .grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
-    .card{
-      background:linear-gradient(180deg,var(--panel),#0e0e0e);
-      border:1px solid var(--stroke);
-      border-radius:var(--radius);padding:14px;
-      display:flex;flex-direction:column;gap:12px; position:relative; overflow:hidden;
-    }
+    .card{background:linear-gradient(180deg,#121212,#0e0e0e);border:1px solid #2a2a2a;border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:12px;position:relative}
     .row{display:flex;align-items:center;justify-content:space-between;gap:10px}
     .left{display:flex;align-items:center;gap:12px}
-    .logo{
-      width:48px;height:48px;border-radius:12px;display:grid;place-items:center;font-size:26px;
-      background:linear-gradient(135deg,#1f1f1f,#0f0f0f);border:1px solid #2b2b2b;box-shadow:inset 0 0 0 2px rgba(255,213,74,.06)
-    }
+    .logo{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;font-size:26px;background:linear-gradient(135deg,#1f1f1f,#0f0f0f);border:1px solid #2b2b2b;box-shadow:inset 0 0 0 2px rgba(255,213,74,.06)}
     .name{font-weight:800;font-size:1.04rem;letter-spacing:.2px}
     .badge{font-size:.72rem;color:#121212;background:linear-gradient(135deg,var(--gold),#ffb347);padding:4px 8px;border-radius:999px;font-weight:800}
-    .badge.badge-new{box-shadow:0 0 14px rgba(255,213,74,.35)}
+    .badge.new{box-shadow:0 0 14px rgba(255,213,74,.35)}
     .muted{color:var(--muted);font-size:.86rem}
     .btns{display:flex;gap:8px}
-    .btn{
-      flex:1 1 auto;min-width:110px;text-align:center;border:none;cursor:pointer;
-      background:linear-gradient(135deg,var(--gold),#ffb347);color:#121212;font-weight:800;
-      padding:10px 12px;border-radius:12px; display:flex; align-items:center; justify-content:center; gap:8px;
-    }
-    .btn.secondary{
-      background:linear-gradient(135deg,#2c2c2c,#1a1a1a); color:#eaeaea; border:1px solid #2f2f2f;
-    }
-
-    /* Cinta decorativa para "Nuevo" */
-    .ribbon{
-      position:absolute; top:10px; right:-38px; transform:rotate(35deg);
-      background:linear-gradient(135deg,var(--gold),#ffb347);
-      color:#111; font-weight:900; font-size:.7rem; padding:6px 52px; letter-spacing:.6px;
-      box-shadow:0 6px 18px rgba(0,0,0,.35);
-    }
-
+    .btn{flex:1 1 auto;min-width:110px;text-align:center;border:none;cursor:pointer;background:linear-gradient(135deg,var(--gold),#ffb347);color:#121212;font-weight:800;padding:10px 12px;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:8px}
+    .btn.secondary{background:linear-gradient(135deg,#2c2c2c,#1a1a1a);color:#eaeaea;border:1px solid #2f2f2f}
     footer{padding:18px 4px 26px;text-align:center;color:#80868b;font-size:.86rem}
     @media (max-width:420px){.grid{grid-template-columns:1fr}}
   </style>
@@ -113,20 +67,12 @@
         <div class="row">
           <div class="left">
             <div class="logo" aria-hidden="true">🏓</div>
-            <div>
-              <div class="name">Pong 2 Jugadores (Vertical)</div>
-              <div class="badge">2P</div>
-            </div>
+            <div><div class="name">Pong 2 Jugadores (Vertical)</div><div class="badge">2P</div></div>
           </div>
         </div>
         <div class="muted">Paletas arriba/abajo. Multitouch en móviles.</div>
         <div class="btns">
-          <button class="btn" onclick="location.href='pong-vertical.html'">
-            <i class="fa-solid fa-play"></i> Jugar
-          </button>
-          <button class="btn secondary" onclick="location.href='pong-vertical.html#howto'">
-            <i class="fa-regular fa-circle-question"></i> Cómo jugar
-          </button>
+          <button class="btn" onclick="location.href='pong-vertical.html'"><i class="fa-solid fa-play"></i> Jugar</button>
         </div>
       </article>
 
@@ -135,52 +81,48 @@
         <div class="row">
           <div class="left">
             <div class="logo" aria-hidden="true">🚀</div>
-            <div>
-              <div class="name">Galactic Defender</div>
-              <div class="badge">Arcade</div>
-            </div>
+            <div><div class="name">Galactic Defender</div><div class="badge">Arcade</div></div>
           </div>
         </div>
         <div class="muted">Jefe cada 3 niveles. Compatible móvil y gamepad.</div>
         <div class="btns">
-          <button class="btn" onclick="location.href='galactic-defender.html'">
-            <i class="fa-solid fa-play"></i> Jugar
-          </button>
-          <button class="btn secondary" onclick="location.href='galactic-defender.html#howto'">
-            <i class="fa-regular fa-circle-question"></i> Cómo jugar
-          </button>
+          <button class="btn" onclick="location.href='galactic-defender.html'"><i class="fa-solid fa-play"></i> Jugar</button>
         </div>
       </article>
 
-      <!-- Pac-Man Mobile (Nuevo) -->
+      <!-- Pac-Man Mobile -->
       <article class="card">
-        <div class="ribbon">NUEVO</div>
         <div class="row">
           <div class="left">
             <div class="logo" aria-hidden="true">🟡</div>
-            <div>
-              <div class="name">Pac-Man Mobile</div>
-              <div class="badge badge-new">Arcade</div>
-            </div>
+            <div><div class="name">Pac-Man Mobile</div><div class="badge">Arcade</div></div>
           </div>
         </div>
-        <div class="muted">Come puntos, evita fantasmas. DPAD táctil y gestos swipe. Botón “Volver al panel” dentro del juego.</div>
+        <div class="muted">DPAD táctil, gestos swipe. Botón “Volver al panel” dentro del juego.</div>
         <div class="btns">
-          <button class="btn" onclick="location.href='pac-man.html'">
-            <i class="fa-solid fa-play"></i> Jugar
-          </button>
-          <button class="btn secondary" onclick="location.href='pacman.html#howto'">
-            <i class="fa-regular fa-circle-question"></i> Cómo jugar
-          </button>
+          <button class="btn" onclick="location.href='pacman.html'"><i class="fa-solid fa-play"></i> Jugar</button>
         </div>
       </article>
 
+      <!-- Tetris Evolution (Nuevo) -->
+      <article class="card">
+        <div class="row">
+          <div class="left">
+            <div class="logo" aria-hidden="true">🧊</div>
+            <div><div class="name">Tetris Evolution</div><div class="badge new">Nuevo</div></div>
+          </div>
+        </div>
+        <div class="muted">7-bag, ghost piece, HOLD, hard drop, auto-repetición y UI móvil.</div>
+        <div class="btns">
+          <button class="btn" onclick="location.href='tetris-evolution.html'"><i class="fa-solid fa-play"></i> Jugar</button>
+          <button class="btn secondary" onclick="location.href='tetris-evolution.html#howto'"><i class="fa-regular fa-circle-question"></i> Cómo jugar</button>
+        </div>
+      </article>
     </div>
   </main>
 
   <footer>Instala esta app desde el menú del navegador para usarla offline.</footer>
 
-  <!-- Registro del Service Worker + PWA install + estado red -->
   <script>
     // Service Worker
     if ('serviceWorker' in navigator) {
@@ -188,39 +130,14 @@
         navigator.serviceWorker.register('./service-worker.js').catch(console.error)
       );
     }
-
     // Estado de red
-    const netDot = document.getElementById('netDot');
-    const netText = document.getElementById('netText');
-    function updateNet(){
-      const on = navigator.onLine;
-      netDot.classList.toggle('off', !on);
-      netText.textContent = on ? 'Conectado' : 'Sin conexión';
-    }
-    window.addEventListener('online', updateNet);
-    window.addEventListener('offline', updateNet);
-    updateNet();
-
-    // Botón "Instalar app" (PWA)
-    let deferredPrompt = null;
-    const installBtn = document.getElementById('installBtn');
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      installBtn.style.display = 'inline-flex';
-    });
-
-    installBtn.addEventListener('click', async () => {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      // Opcional: podrías registrar analytics del outcome
-      deferredPrompt = null;
-      installBtn.style.display = 'none';
-    });
-
-    // En iOS no existe beforeinstallprompt; el botón quedará oculto (ok).
+    const netDot=document.getElementById('netDot'), netText=document.getElementById('netText');
+    function updateNet(){ const on=navigator.onLine; netDot.classList.toggle('off',!on); netText.textContent=on?'Conectado':'Sin conexión'; }
+    window.addEventListener('online',updateNet); window.addEventListener('offline',updateNet); updateNet();
+    // Botón instalar PWA
+    let deferredPrompt=null; const installBtn=document.getElementById('installBtn');
+    window.addEventListener('beforeinstallprompt',(e)=>{ e.preventDefault(); deferredPrompt=e; installBtn.style.display='inline-flex'; });
+    installBtn.addEventListener('click', async ()=>{ if(!deferredPrompt) return; deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; installBtn.style.display='none'; });
   </script>
 </body>
 </html>
