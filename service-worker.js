@@ -8,10 +8,12 @@ const PRECACHE_URLS = [
   './index.html',
   './offline.html',
   './pong-vertical.html',
+   './galactic-defender.html',
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/icon-maskable.png'
+  
 ];
 
 self.addEventListener('install', event => {
