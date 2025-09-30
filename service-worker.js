@@ -1,5 +1,5 @@
 /* service-worker.js */
-const CACHE_VER = 'arcade-v11';
+const CACHE_VER = 'arcade-v12';
 const STATIC_CACHE = CACHE_VER + '-static';
 const RUNTIME_CACHE = CACHE_VER + '-runtime';
 
